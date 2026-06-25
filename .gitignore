@@ -22,6 +22,10 @@ test-wsproxy.js
 capture-version.js
 inspect-auth.js
 verify-brand.js
+capture-frame.js
+decode-handshake.js
+dump-hex.js
+verify-inject.js
 
 # misc
 *.log

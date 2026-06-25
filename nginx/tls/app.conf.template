@@ -41,6 +41,12 @@ server {
         proxy_send_timeout          3600s;
     }
 
+    # Hardening script: fingerprint spoof + analytics block (runs before the app)
+    location = /__inject.js {
+        default_type application/javascript;
+        alias /etc/nginx/brand/inject.js;
+    }
+
     # Branding script (served locally, not proxied)
     location = /__brand.js {
         default_type application/javascript;
@@ -60,6 +66,7 @@ server {
         sub_filter_once             off;
         sub_filter_types            application/javascript text/javascript application/json text/html;
         sub_filter "wss://api.oneme.ru/websocket" "${PUBLIC_WS_URL}";
+        sub_filter "<head>" "<head><script src=\"/__inject.js\"></script>";
         sub_filter "</head>" "<script src=\"/__brand.js\" defer></script></head>";
     }
 }

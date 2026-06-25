@@ -72,6 +72,24 @@ pointing at the server, and ports 80/443 open.
 
 ---
 
+## Privacy hardening
+
+A small script (`nginx/brand/inject.js`) runs before the app and, without
+breaking messaging:
+
+- **Blocks analytics & crash trackers** — drops the product-analytics frames
+  (WS opcode 5) and neutralizes the AppTracer crash/perf SDK and OK calls
+  telemetry beacons.
+- **Spoofs the device fingerprint** sent in the connection handshake:
+  `osVersion` and browser name are masked to `Secret`, while `User-Agent`,
+  screen size and timezone are randomized (stable per browser). `deviceType`,
+  `appVersion`, locale and the per-origin `deviceId` are left intact so the
+  client keeps working.
+- **Polyfills `crypto.randomUUID`** so the client also runs in non-secure
+  contexts.
+
+---
+
 ## Caveats
 
 - **Not independent.** It fully depends on MAX's backend; if MAX changes the
