@@ -1,0 +1,34 @@
+# Production mode — HTTPS via Let's Encrypt.
+#   1) cp .env.example .env   (set MAX_DOMAIN and LETSENCRYPT_EMAIL)
+#   2) ./scripts/init-letsencrypt.sh   (one-time certificate bootstrap)
+#   3) docker compose up -d
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: maxweb
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      MAX_DOMAIN: ${MAX_DOMAIN}
+      PUBLIC_WS_URL: wss://${MAX_DOMAIN}/websocket
+    volumes:
+      - ./nginx/tls:/etc/nginx/templates:ro
+      - ./nginx/brand:/etc/nginx/brand:ro
+      - certbot-conf:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
+    restart: unless-stopped
+
+  # Renews certificates every 12h; reload nginx picks new certs on its own restart.
+  certbot:
+    image: certbot/certbot
+    container_name: maxweb-certbot
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $${!}; done;'"
+    restart: unless-stopped
+
+volumes:
+  certbot-conf:
+  certbot-www:

@@ -1,1 +1,29 @@
-orig
+# secrets / local config
+.env
+
+# logged-in browser session — MUST NOT be published
+.userdata/
+.continue
+
+# scraped dumps from the research phase
+mirror/
+mirror2/
+
+# node (only used by the research scripts, not by the app)
+node_modules/
+package-lock.json
+package.json
+
+# local research/experiment scripts (contain machine-specific paths)
+save-site.js
+crawl-site.js
+test-proxy.js
+test-wsproxy.js
+capture-version.js
+inspect-auth.js
+verify-brand.js
+
+# misc
+*.log
+*.output
+.DS_Store

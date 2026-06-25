@@ -1,0 +1,16 @@
+# Local / quick-try mode — no domain or certificates needed.
+#   docker compose -f docker-compose.local.yml up
+# then open http://localhost:8080
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: maxweb-local
+    ports:
+      - "8080:80"
+    environment:
+      MAX_DOMAIN: localhost
+      PUBLIC_WS_URL: ws://localhost:8080/websocket
+    volumes:
+      - ./nginx/local:/etc/nginx/templates:ro
+      - ./nginx/brand:/etc/nginx/brand:ro
+    restart: unless-stopped
